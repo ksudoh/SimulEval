@@ -7,6 +7,6 @@
 from . agent import Agent
 
 
-class TextAgent(Agent):
+class TextToTextAgent(Agent):
     data_type = "text"
     pass

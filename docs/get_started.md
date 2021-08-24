@@ -27,11 +27,11 @@ Following is an example implementation. It runs a wait-k policy [(Ma et al, 2019
 Notice that the user has to define at least two functions as we mentioned before: `policy` which returns the action and `predict` which returns the prediction.
 Both functions take `states` as an input argument, which contains the contextual information.
 ```
-from simuleval.agents import TextAgent
+from simuleval.agents import TextToTextAgent
 from simuleval import READ_ACTION, WRITE_ACTION, DEFAULT_EOS
 
 
-class DummyWaitkTextAgent(TextAgent):
+class DummyWaitkTextToTextAgent(TextToTextAgent):
 
     data_type = "text"
 

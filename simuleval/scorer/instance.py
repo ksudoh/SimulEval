@@ -9,6 +9,7 @@ import os
 import math
 import soundfile
 import sacrebleu
+import json
 
 from simuleval import DEFAULT_EOS
 from simuleval.metrics.latency import (
@@ -192,7 +193,7 @@ class TextInstance(Instance):
         return dict_to_return
 
 
-class AudioInstance(Instance):
+class SpeechToTextInstance(Instance):
     def preprocess_source(self, source):
         # Only get info (sample rate), read audio file when first read request
         # happens
@@ -275,3 +276,68 @@ class AudioInstance(Instance):
         # For speech we also consider the computation-aware latency
         self.metrics["latency_ca"] = eval_all_latency(
             self.elapsed, self.source_length(), self.reference_length() + 1)
+
+
+class SpeechToSpeechInstance(SpeechToTextInstance):
+    def __init__(
+        self,
+        instance_id,
+        source,
+        target,
+        output_dir,
+        sample_rate,
+    ):
+        super().__init__(
+            instance_id,
+            source,
+            target,
+            None
+        )
+        self.output = output_dir
+        self.sample_rate = sample_rate
+        self.output_path = os.path.join(self.output, f"{self.instance_id}.wav")
+
+    def recv_hypo(
+        self,
+        list_hypo: str,
+        latency_unit: str = "second"
+    ):
+        """
+        Handler for receiving new predictions
+        """
+        if self.finish:
+            return
+
+        if self.start_time is None:
+            self.start_time = time.time()
+
+        current_time = time.time()
+
+        for hypo in list_hypo:
+            if hypo in [DEFAULT_EOS]:
+                self.finish = True
+                return
+            self.hypos.append(json.loads(hypo))
+            self.elapsed.append(self.step_to_elapsed(self.step, current_time))
+            self.delays.append(self.step_to_delay(self.step))
+
+    def sentence_level_eval(self):
+        # TODO Consider pause
+        samples = []
+        for hypo in self.hypos:
+            samples += hypo
+
+        soundfile.write(
+            self.output_path,
+            samples,
+            self.sample_rate,
+        )
+
+
+    def summarize(self):
+        return {
+            "index": self.instance_id,
+            "delays": self.delays,
+            "elapsed": self.elapsed,
+            "generated_wav": self.output_path
+        }

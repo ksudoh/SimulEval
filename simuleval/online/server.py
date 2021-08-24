@@ -9,7 +9,7 @@ import logging
 import argparse
 from tornado import web, ioloop
 import simuleval
-from simuleval.scorer import Scorer
+from simuleval.scorer import build_scorer
 
 DEFAULT_HOSTNAME = 'localhost'
 DEFAULT_PORT = 12321
@@ -69,7 +69,7 @@ class HypothesisHandler(ScorerHandler):
 
 
 def start_server(args):
-    scorer = Scorer(args)
+    scorer = build_scorer(args)
 
     app = web.Application([
         (r'/result', ResultHandler, dict(scorer=scorer)),

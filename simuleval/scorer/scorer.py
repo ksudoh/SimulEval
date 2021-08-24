@@ -4,13 +4,24 @@
 # LICENSE file in the root directory of this source tree.
 
 import sacrebleu
-from . instance import TextInstance, AudioInstance
+from . instance import (
+    TextInstance,
+    SpeechToTextInstance,
+    SpeechToSpeechInstance
+)
 import os
 import sys
 import logging
 from statistics import mean
+import soundfile as sf
 
 logger = logging.getLogger('simuleval.scorer')
+
+def build_scorer(args):
+    if args.data_type == "speech_to_speech":
+        return SpeechToSpeechScorer(args)
+    else:
+        return Scorer(args)
 
 
 class Scorer(object):
@@ -43,7 +54,9 @@ class Scorer(object):
         if self.data_type == "text":
             self.instance_class = TextInstance
         elif self.data_type == "speech":
-            self.instance_class = AudioInstance
+            self.instance_class = SpeechToTextInstance
+        elif self.data_type == "speech_to_speech":
+            self.instance_class = SpeechToSpeechInstance
         else:
             if self.data_type is None:
                 logger.error(
@@ -159,3 +172,49 @@ class Scorer(object):
 
     def __len__(self):
         return len(self.data["tgt"])
+
+
+class SpeechToSpeechScorer(Scorer):
+    def __init__(self, args):
+        self.data = {
+            "src": self.load_text_file(args.source),
+            "tgt": self.load_text_file(args.target)
+        }
+        self.data_type = args.data_type
+        self.eval_latency_unit = args.eval_latency_unit
+        self.output_dir = args.output
+
+        logger.info(f"Evaluating on {self.data_type}")
+        logger.info(f"Source: {os.path.abspath(args.source)}")
+        logger.info(f"Target: {os.path.abspath(args.target)}")
+        logger.info(f"Number of sentences: {len(self)}")
+
+        self.instances = {}
+        self.instance_class = SpeechToSpeechInstance
+        self.output = args.output
+        self.generate_sample_rate = args.generate_sample_rate
+        self.reset()
+
+    def reset(self):
+        if len(self.instances) > 0:
+            logger.warning("Resetting scorer")
+
+        for i, (src, tgt) in enumerate(
+                zip(self.data["src"], self.data["tgt"])):
+            self.instances[i] = self.instance_class(
+                i, src, tgt,
+                self.output,
+                self.generate_sample_rate,
+            )
+
+    def get_latency_score(self):
+        return None
+
+    def gather_translation(self):
+        translations = []
+        for i in range(len(self)):
+            translations.append(self.instances[i].output_path)
+        return translations
+
+    def score(self):
+        return {}

@@ -4,11 +4,11 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
-from simuleval.agents import TextAgent
+from simuleval.agents import TextToTextAgent
 from simuleval import READ_ACTION, WRITE_ACTION, DEFAULT_EOS
 
 
-class DummyWaitkTextAgent(TextAgent):
+class DummyWaitkTextToTextAgent(TextToTextAgent):
 
     data_type = "text"
 

@@ -6,13 +6,14 @@
 
 from . states import BaseStates
 from . states import Entry, ListEntry, QueueEntry, SignalEntry
-from . speech_states import SpeechStates
+from . speech_states import SpeechStates, SpeechToSpeechStates
 from . text_states import TextStates
 
 __all__ = [
     "BaseStates",
     "TextStates",
     "SpeechStates",
+    "SpeechToSpeechStates"
     "ListEntry",
     "SignalEntry",
     "Entry",

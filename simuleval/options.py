@@ -30,6 +30,9 @@ def add_data_args(parser):
     parser.add_argument('--no-space', action="store_true",
                         help="No space is added between received words."
                         )
+    parser.add_argument('--generate-sample-rate', default=16000, type=int,
+                        help="No space is added between received words."
+                        )
 
 
 def add_server_args(parser):
