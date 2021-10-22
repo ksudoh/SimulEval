@@ -36,7 +36,7 @@ class SpeechStates(BaseStates):
         return {
             "instance_id": self.instance_id,
             "finish_read": self.finish_read(),
-            "finish_hypo": self.finish_hypo(),
+            "finish_target": self.finish_target(),
             "segments": {
                 "source": {
                     "ms": self.num_milliseconds(),
@@ -105,7 +105,7 @@ class SpeechToSpeechStates(SpeechStates):
         return {
             "instance_id": self.instance_id,
             "finish_read": self.finish_read(),
-            "finish_hypo": self.finish_hypo(),
+            "finish_target": self.finish_target(),
             "segments": {
                 "source": {
                     "ms": self.src_num_milliseconds(),

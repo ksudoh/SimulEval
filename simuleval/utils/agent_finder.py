@@ -48,7 +48,7 @@ def find_agent_cls(args):
             logger.error(
                 f"Only one agent name at one time, {len(agent_name)} are provided. {' '.join(agent_name)}"
             )
-        sys.exit(1)
+            sys.exit(1)
         agent_name = agent_name[0]
 
         if agent_name not in new_class_names_in_file:

@@ -7,9 +7,6 @@
 from . agent import Agent
 
 
-class SpeechToTextAgent(Agent):
-    data_type = "speech"
+class SpeechAgent(Agent):
+    data_type = {"source": "speech", "target": "text"}
     speech_segment_size = 10
-
-class SpeechToSpeechAgent(SpeechToTextAgent):
-    data_type = "speech_to_speech"

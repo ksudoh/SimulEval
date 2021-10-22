@@ -138,7 +138,7 @@ class BaseStates(object):
     def finish_read(self):
         return not self.status["read"]
 
-    def finish_hypo(self):
+    def finish_target(self):
         return not self.status["write"]
 
     @property
@@ -202,7 +202,7 @@ class BaseStates(object):
     def summarize(self):
         return {
             "finish_read": self.finish_read(),
-            "finish_hypo": self.finish_hypo(),
+            "finish_target": self.finish_target(),
             "segments": {
                 "source": self.segments.source.info(),
                 "target": self.segments.target.info(),

@@ -19,6 +19,7 @@ from simuleval import READ_ACTION, WRITE_ACTION
 from simuleval.online import start_client, start_server
 from simuleval.utils.agent_finder import find_agent_cls
 from simuleval.utils.functional import split_list_into_chunks
+from tqdm import tqdm
 
 
 logging.basicConfig(
@@ -102,9 +103,9 @@ def decode(args, client, result_queue, instance_ids):
     agent = agent_cls(args)
 
     # Decode
-    for instance_id in instance_ids:
+    for instance_id in tqdm(instance_ids):
         states = agent.build_states(args, client, instance_id)
-        while not states.finish_hypo():
+        while not states.finish_target():
             action = agent.policy(states)
             if action == READ_ACTION:
                 states.update_source()
@@ -145,15 +146,16 @@ def evaluate(args, client, server_process=None):
         decode(args, client, result_queue, indices)
 
     scores = client.get_scores()
-    logger.info("Evaluation results:\n" + json.dumps(scores, indent=4))
-    logger.info("Evaluation finished")
+    if scores is not None:
+        logger.info("Evaluation results:\n" + json.dumps(scores, indent=4))
+    logger.info("Evaluation finished.")
 
     data_writer.write_scores(scores)
     data_writer.kill()
 
     if server_process is not None:
         server_process.kill()
-        logger.info("Shutdown server")
+        logger.info("Shutdown server.")
 
 
 def main():
@@ -184,7 +186,7 @@ def _main(client_only=False):
         server_process = Process(
             target=start_server, args=(args, ))
         server_process.start()
-        time.sleep(3)
+        time.sleep(10)
     else:
         server_process = None
 

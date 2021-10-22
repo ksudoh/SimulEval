@@ -6,11 +6,10 @@
 
 from . agent import Agent
 from . text_agent import TextToTextAgent
-from . speech_agent import SpeechToTextAgent, SpeechToSpeechAgent
+from . speech_agent import SpeechAgent
 
 BUILDIN_AGENTS = [
     Agent,
     TextToTextAgent,
-    SpeechToTextAgent,
-    SpeechToSpeechAgent
+    SpeechAgent
 ]
