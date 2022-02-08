@@ -26,7 +26,7 @@ setuptools.setup(
         "requests",
         "pytest-flake8"
     ],
-    package=setuptools.find_packages(
+    packages=setuptools.find_packages(
         exclude=[
                 "examples",
                 "examples.*",
